@@ -1,0 +1,31 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\astroncite{Fellows}{2014}]{R-wordcloud}
+Fellows, I. (2014).
+\newblock {\em wordcloud: Word Clouds}.
+\newblock R package version 2.5.
+
+\bibitem[\protect\astroncite{Robinson}{2017}]{R-gutenbergr}
+Robinson, D. (2017).
+\newblock {\em gutenbergr: Download and Process Public Domain Works from
+  Project Gutenberg}.
+\newblock R package version 0.1.3.
+
+\bibitem[\protect\astroncite{Robinson and Silge}{2017}]{R-tidytext}
+Robinson, D. and Silge, J. (2017).
+\newblock {\em tidytext: Text Mining using 'dplyr', 'ggplot2', and Other Tidy
+  Tools}.
+\newblock R package version 0.1.4.
+
+\bibitem[\protect\astroncite{Wickham et~al.}{2017}]{R-dplyr}
+Wickham, H., Francois, R., Henry, L., and Müller, K. (2017).
+\newblock {\em dplyr: A Grammar of Data Manipulation}.
+\newblock R package version 0.7.2.
+
+\bibitem[\protect\astroncite{Xie}{2017}]{R-knitr}
+Xie, Y. (2017).
+\newblock {\em knitr: A General-Purpose Package for Dynamic Report Generation
+  in R}.
+\newblock R package version 1.17.
+
+\end{thebibliography}

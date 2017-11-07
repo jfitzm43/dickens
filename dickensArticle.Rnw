@@ -1,0 +1,113 @@
+\documentclass{article}
+\usepackage{natbib}
+
+<<echo=FALSE>>=
+  packages<-c('dplyr','tidytext','wordcloud','gutenbergr','knitr')
+knitr::write_bib(packages,file='packages.bib')
+@
+
+\begin{document}
+\title{A Tale of Two Cities by Charles Dickens Wordcloud}
+\author{Jorge Fitzmaurice}
+\maketitle
+
+\begin{abstract}
+In this article we construct a wordcloud, using the tidytext R package, for Charles Dicken's Novel A Tale of Two Cities.
+
+
+\end{abstract}
+
+\textit{A Tale of Two Cities} (1859)\footnote{The novel was published by Charles Dickens.} is a novel by Charles Dickens, set in London and Paris before and during the French Revolution. The novel tells the story of the French Doctor Manette, his 18-year-long imprisonment in the Bastille in Paris and his release to life in London with his daughter Lucie, whom he had never met; Lucie's marriage and the collision between her beloved husband and the people who caused her father's imprisonment; and Monsieur and Madame Defarge, sellers of wine in a poor suburb of Paris. The story is set against the conditions that led up to the French Revolution and the Reign of Terror.
+
+\section{The Gutenbergr Package}
+There is a relatively new package for R, guntenbergr, that gives one access to a variety of public domain works from the Project Gutenberg collection\citep{Silge}.  One first has to install this package and bring it in with library.  You may then call the following function to find the title number and then call the next function to download the document and store the result.  The result will be a data frame.
+
+<<message=FALSE>>=
+library(gutenbergr)
+gutenberg_works(title=='A Tale of Two Cities')
+
+dickens<-gutenberg_download(98)
+
+dickens
+@
+
+This dataframe has two columns, one for each line in Charles Dicken's Novel, and one indicating the gutenberg ID from which the book came from.  Let's first unnest the lines to get every word in the novel in a different row:
+
+<<warning=FALSE,message=FALSE>>=
+library(tidytext)
+library(dplyr)
+dickens_words<-dickens%>%
+                  unnest_tokens(word,text)
+dickens_words$gutenberg_id<-NULL
+head(dickens_words)
+@
+
+\noindent Now we are ready to get the sentiments data frame.
+
+\section{The Sentiments Data Frame}
+
+The sentiments data frame is part of the tidy text package and it gives us different lexicons to work with. For this article the NRC lexicon will be used. The NRC lexicon give us the emotion represented by certain word.
+For this article, we will only be using the fear words in the NRC lexicon for the first wordcloud and the joy words in the NRC lexicon for the second wordcloud.
+
+<<>>=
+nrc<-get_sentiments('nrc')
+unique(nrc$sentiment)
+
+fear_words<-nrc%>%
+            filter(sentiment == 'fear')
+head(fear_words)
+
+joy_words<-nrc%>%
+  filter(sentiment == 'joy')
+head(joy_words)
+@
+
+Next, we would like to join the data frame with the words for the novel and the data frame with the sentiments words to keep only those words that are represented in the sentiment lexicon with the selected sentiments.
+
+\section{The Wordcloud}
+To make the wordcloud, we first have to join the two data frames to get a new data frame with only the words with the appropriate sentiment are in there. We can use a function from the dplyr package for this:
+
+<<>>=
+dickens_fear<-inner_join(dickens_words,fear_words)
+dickens_fear
+
+dickens_joy<-inner_join(dickens_words,joy_words)
+dickens_joy
+@
+
+Now, we need to calculate the frequencies of the words in the novel.  Again, we can use standard dplyr techniques for this:
+
+<<>>=
+fear_freq<-dickens_fear%>%
+                  group_by(word)%>%
+                  summarize(count=n())
+fear_freq
+
+joy_freq<-dickens_joy%>%
+                  group_by(word)%>%
+                  summarize(count=n())
+joy_freq
+@
+
+
+
+Finally, it's time to generate the wordcloud for the fear words:
+
+<<message=FALSE,warning=FALSE>>=
+library(wordcloud)
+wordcloud(fear_freq$word,fear_freq$count,min.freq=5)
+@
+
+Lastly, it's time to generate the wordcloud for the joy words:
+
+<<message=FALSE,warning=FALSE>>=
+wordcloud(joy_freq$word,joy_freq$count,min.freq=3)
+@
+
+\bibliographystyle{apa}
+\bibliography{packages}
+\nocite{*}
+
+
+
+\end{document}
